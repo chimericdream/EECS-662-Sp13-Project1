@@ -47,3 +47,5 @@ tmtags
 .project
 .settings/
 ##############
+
+*.rkt~
