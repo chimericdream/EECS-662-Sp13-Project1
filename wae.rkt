@@ -14,43 +14,20 @@
             (sub (l r) (sub (subst l sub-id val) (subst r sub-id val)))
             (with (bound-id named-expr bound-body)
                 (if (symbol=? bound-id sub-id)
-                    (with
-                        bound-id
-                        (subst named-expr sub-id val)
-                        bound-body)
-                    (with
-                        bound-id
-                        (subst named-expr sub-id val)
-                        (subst bound-body sub-id val))
-                )
-            ) ; with
-            (id (v) (if (symbol=? v sub-id) val expr))
-        ) ; type-case
-    ) ; lambda
-) ; define subst
+                    (with bound-id (subst named-expr sub-id val) bound-body)
+                    (with bound-id (subst named-expr sub-id val) (subst bound-body sub-id val))))
+            (id (v) (if (symbol=? v sub-id) val expr)))))
 
-(define parse
+(define parse-wae
     (lambda (SEXP)
         (cond
             ((number? SEXP) (num SEXP))
             ((list? SEXP)
                 (case (first SEXP)
-                    ((+) (add
-                        (parse (second SEXP))
-                        (parse (third SEXP))))
-                    ((-) (sub
-                        (parse (second SEXP))
-                        (parse (third SEXP))))
-                    ((with) (with
-                        (first (second SEXP))
-                        (parse (second (second SEXP)))
-                        (parse (third SEXP))))
-                ) ; case
-            ) ; list
-            ((symbol? SEXP) (id SEXP))
-        ) ; cond
-    ) ; lambda
-) ; define parse
+                    ((+) (add (parse-wae (second SEXP)) (parse-wae (third SEXP))))
+                    ((-) (sub (parse-wae (second SEXP)) (parse-wae (third SEXP))))
+                    ((with) (with (first (second SEXP)) (parse-wae (second (second SEXP))) (parse-wae (third SEXP))))))
+            ((symbol? SEXP) (id SEXP)))))
 
 (define calc
     (lambda (a-wae)
@@ -58,15 +35,10 @@
             (num (x) x)
             (add (l r) (+ (calc l) (calc r)))
             (sub (l r) (- (calc l) (calc r)))
-            (with (bound-id named-expr bound-body)
-                (calc (subst bound-body bound-id (num (calc named-expr))))
-            )
-            (id (v) (error "BAD"))
-        ) ; type-case
-    ) ; lambda
-) ; define calc
+            (with (bound-id named-expr bound-body) (calc (subst bound-body bound-id (num (calc named-expr)))))
+            (id (v) (error "BAD")))))
 
-(define interp (lambda (SEXP) (calc (parse SEXP))))
+(define interp (lambda (SEXP) (calc (parse-wae SEXP))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -82,14 +54,8 @@
 ; returns (num 3)
 (add-lhs (add (num 3) (num 5)))
 
-; returns (add (sub (sub (num 4) (num 3)) (num 15)) (add (add (sub (num 10) (num 5)) (sub (num 3) (num 2))) (sub (num 15) (num 42))))
-(parse '{+ {- {- 4 3} 15} {+ {+ {- 10 5} {- 3 2}} {- 15 42}}})
-
 ; returns (with 'x (num 5) (add (id 'x) (id 'x)))
-(parse '{with {x 5} {+ x x}})
-
-; returns (with 'x (num 5) (with 'x (add (id 'x) (id 'x)) (add (id 'x) (id 'x))))
-(parse '{with {x 5} {with {x {+ x x}} {+ x x}}})
+(parse-wae '{with {x 5} {+ x x}})
 
 ; returns -35
 (interp '{+ {- {- 4 3} 15} {+ {+ {- 10 5} {- 3 2}} {- 15 42}}})
