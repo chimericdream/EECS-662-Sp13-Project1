@@ -29,24 +29,24 @@
                     ((with) (with (first (second SEXP)) (parse-wae (second (second SEXP))) (parse-wae (third SEXP))))))
             ((symbol? SEXP) (id SEXP)))))
 
-(define calc
+(define interp-wae
     (lambda (a-wae)
         (type-case WAE a-wae
             (num (x) x)
-            (add (l r) (+ (calc l) (calc r)))
-            (sub (l r) (- (calc l) (calc r)))
-            (with (bound-id named-expr bound-body) (calc (subst bound-body bound-id (num (calc named-expr)))))
+            (add (l r) (+ (interp-wae l) (interp-wae r)))
+            (sub (l r) (- (interp-wae l) (interp-wae r)))
+            (with (bound-id named-expr bound-body) (interp-wae (subst bound-body bound-id (num (interp-wae named-expr)))))
             (id (v) (error "BAD")))))
 
-(define interp (lambda (SEXP) (calc (parse-wae SEXP))))
+(define eval-wae (lambda (SEXP) (interp-wae (parse-wae SEXP))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; returns 5
-(calc (num 5))
+(interp-wae (num 5))
 
 ; returns 8
-(calc (add (num 3) (num 5)))
+(interp-wae (add (num 3) (num 5)))
 
 ; returns 5
 (num-n (num 5))
@@ -58,10 +58,10 @@
 (parse-wae '{with {x 5} {+ x x}})
 
 ; returns -35
-(interp '{+ {- {- 4 3} 15} {+ {+ {- 10 5} {- 3 2}} {- 15 42}}})
+(eval-wae '{+ {- {- 4 3} 15} {+ {+ {- 10 5} {- 3 2}} {- 15 42}}})
 
 ; returns 20
-(interp '{with {x 5} {with {x {+ x x}} {+ x x}}})
+(eval-wae '{with {x 5} {with {x {+ x x}} {+ x x}}})
 
 ; returns 60
-(interp '{with {x 10} {with {y {+ x x}} {with {z {+ y x}} {+ z {+ x y}}}}})
+(eval-wae '{with {x 10} {with {y {+ x x}} {with {z {+ y x}} {+ z {+ x y}}}}})
