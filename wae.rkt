@@ -36,7 +36,7 @@
             (add (l r) (+ (interp-wae l) (interp-wae r)))
             (sub (l r) (- (interp-wae l) (interp-wae r)))
             (with (bound-id named-expr bound-body) (interp-wae (subst bound-body bound-id (num (interp-wae named-expr)))))
-            (id (v) (error "BAD")))))
+            (id (v) (error 'interp-wae->id (string-append "Found a free identifier (" (symbol->string v) ")"))))))
 
 (define eval-wae (lambda (SEXP) (interp-wae (parse-wae SEXP))))
 
@@ -65,3 +65,6 @@
 
 ; returns 60
 (eval-wae '{with {x 10} {with {y {+ x x}} {with {z {+ y x}} {+ z {+ x y}}}}})
+
+; returns an error (free identifier)
+(eval-wae '{with {x 5} {with {x {+ x x}} {+ y x}}})
