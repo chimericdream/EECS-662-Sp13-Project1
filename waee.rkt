@@ -53,14 +53,6 @@
                     (bop-op (car op-table))
                     (lookup op-name (cdr op-table)))))))
 
-(define get-opname
-    (lambda (op op-table)
-        (cond ((empty? op-table) (error 'lookup (string-append "Operator not found: " (symbol->string op))))
-            (else
-                (if (eq? (bop-op (car op-table)) op)
-                    (bop-name (car op-table))
-                    (lookup op (cdr op-table)))))))
-
 (define ops (list
     (bop '+ +)
     (bop '- -)
