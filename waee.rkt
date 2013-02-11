@@ -72,7 +72,7 @@
 ;;
 
 ; returns (with 'x (num 5) (add (id 'x) (id 'x)))
-(parse-waee '{with {x 5} {+ x x}})
+(parse-waee '{with {{x 5}} {+ x x}})
 
 ; returns -35
 (parse-waee '{+ {- {- 4 3} 15} {+ {+ {- 10 5} {- 3 2}} {- 15 42}}})
@@ -81,13 +81,13 @@
 (eval-waee '{+ {- {- 4 3} 15} {+ {+ {- 10 5} {- 3 2}} {- 15 42}}})
 
 ; returns 20
-(eval-waee '{with {x 5} {with {x {+ x x}} {+ x x}}})
+(eval-waee '{with {{x 5}} {with {{x {+ x x}}} {+ x x}}})
 
 ; returns 60
-(eval-waee '{with {x 10} {with {y {+ x x}} {with {z {+ y x}} {+ z {+ x y}}}}})
+(eval-waee '{with {{x 10}} {with {{y {+ x x}}} {with {{z {+ y x}}} {+ z {+ x y}}}}})
 
 ; returns 50
-(eval-waee '{with {x 10} {* x 5}})
+(eval-waee '{with {{x 10}} {* x 5}})
 
 ; returns 10
 (eval-waee '{/ 50 5})
