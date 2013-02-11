@@ -31,7 +31,10 @@
             ((number? SEXP) (num SEXP))
             ((list? SEXP)
                 (case (first SEXP)
-;                    ((with) (with (first (second SEXP)) (parse-waee (second (second SEXP))) (parse-waee (third SEXP))))
+                    ((with)
+                        (with
+                            (map (lambda (b) (list (first b) (parse-waee (second b)))) (second SEXP))
+                            (parse-waee (third SEXP))))
                     (else (binop (first SEXP) (parse-waee (second SEXP)) (parse-waee (third SEXP))))))
             ((symbol? SEXP) (id SEXP)))))
 
