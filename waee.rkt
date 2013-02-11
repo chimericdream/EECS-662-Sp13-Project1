@@ -8,6 +8,12 @@
     (with (name symbol?) (named-expr WAEE?) (body WAEE?))
     (id (name symbol?)))
 
+; Check whether something is a binding
+(define binding? (lambda (x) (and (symbol? (first x)) (WAEE? (second x)))))
+
+; Check whether something is a list of bindings
+(define lob? (lambda (x) (cond ((empty? x) #t) (else (and (binding? (car x)) (lob? (cdr x)))))))
+
 (define subst
     (lambda (expr sub-id val)
         (type-case WAEE expr
