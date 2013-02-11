@@ -100,3 +100,9 @@
 (lookup '- ops)
 (lookup '* ops)
 (lookup '/ ops)
+
+; test the binding? check
+(binding? (list 'x (num 5)))
+
+; test the lob? check
+(lob? (list (list 'x (num 5)) (list 'y (num 7)) (list 'z (num 9))))
