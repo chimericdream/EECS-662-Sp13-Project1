@@ -19,10 +19,10 @@
         (type-case WAEE expr
             (num (x) expr)
             (binop (op l r) (binop op (subst l sub-id val) (subst r sub-id val)))
-            (with (bound-id named-expr bound-body)
-                (if (symbol=? bound-id sub-id)
-                    (with bound-id (subst named-expr sub-id val) bound-body)
-                    (with bound-id (subst named-expr sub-id val) (subst bound-body sub-id val))))
+;            (with (bound-id named-expr bound-body)
+;                (if (symbol=? bound-id sub-id)
+;                    (with bound-id (subst named-expr sub-id val) bound-body)
+;                    (with bound-id (subst named-expr sub-id val) (subst bound-body sub-id val))))
             (id (v) (if (symbol=? v sub-id) val expr)))))
 
 (define parse-waee
@@ -31,7 +31,7 @@
             ((number? SEXP) (num SEXP))
             ((list? SEXP)
                 (case (first SEXP)
-                    ((with) (with (first (second SEXP)) (parse-waee (second (second SEXP))) (parse-waee (third SEXP))))
+;                    ((with) (with (first (second SEXP)) (parse-waee (second (second SEXP))) (parse-waee (third SEXP))))
                     (else (binop (first SEXP) (parse-waee (second SEXP)) (parse-waee (third SEXP))))))
             ((symbol? SEXP) (id SEXP)))))
 
@@ -40,7 +40,7 @@
         (type-case WAEE a-waee
             (num (x) x)
             (binop (op l r) ((lookup op ops) (interp-waee l) (interp-waee r)))
-            (with (bound-id named-expr bound-body) (interp-waee (subst bound-body bound-id (num (interp-waee named-expr)))))
+;            (with (bound-id named-expr bound-body) (interp-waee (subst bound-body bound-id (num (interp-waee named-expr)))))
             (id (v) (error 'interp-waee->id (string-append "Found a free identifier (" (symbol->string v) ")"))))))
 
 (define eval-waee (lambda (SEXP) (interp-waee (parse-waee SEXP))))
