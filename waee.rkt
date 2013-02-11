@@ -106,3 +106,5 @@
 
 ; test the lob? check
 (lob? (list (list 'x (num 5)) (list 'y (num 7)) (list 'z (num 9))))
+
+(parse-waee '{with {{x 5} {y 7}} {+ x y}})
