@@ -5,7 +5,7 @@
 (define-type WAEE
     (num (n number?))
     (binop (op symbol?) (lhs WAEE?) (rhs WAEE?))
-    (with (name symbol?) (named-expr WAEE?) (body WAEE?))
+    (with (lob lob?) (body WAEE?))
     (id (name symbol?)))
 
 ; Check whether something is a binding
