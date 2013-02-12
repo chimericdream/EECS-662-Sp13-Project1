@@ -78,31 +78,7 @@
         (type-case WAEE a-waee
             (num (x) x)
             (binop (op l r) ((lookup op ops) (interp-waee l) (interp-waee r)))
-            (with (bindings bound-body)
-;                "Cycle through the list of bound-ids, and replace each of them in the bound-body with their named expression; then interpret the result"
-                (interp-waee
-                    (foldl
-                        (lambda (b body)
-                            (subst
-                                body
-                                (first b)
-                                (num (interp-waee (second b)))
-                            )
-                        )
-                        bound-body
-                        bindings
-                    )
-                )
-            )
-;            (with (bound-id named-expr bound-body)
-;                (interp-waee
-;                    (subst
-;                        bound-body
-;                        bound-id
-;                        (num (interp-waee named-expr))
-;                    )
-;                )
-;            )
+            (with (bindings bound-body) (interp-waee (foldl (lambda (b body) (subst body (first b) (num (interp-waee (second b))))) bound-body bindings)))
             (id (v) (error 'interp-waee->id (string-append "Found a free identifier (" (symbol->string v) ")"))))))
 
 (define eval-waee (lambda (SEXP) (interp-waee (parse-waee SEXP))))
