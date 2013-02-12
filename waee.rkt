@@ -82,11 +82,22 @@
 ;                "Cycle through the list of bound-ids, and replace each of them in the bound-body with their named expression; then interpret the result"
                 (interp-waee
                     (
-                        (map
-                            (lambda (b) (subst bound-body (first b) (num (interp-waee (second b)))))
+                        (foldl
+                            (lambda (b bound-body)
+                                (subst
+                                    bound-body
+                                    (first b)
+                                    (num (interp-waee (second b)))
+                                )
+                            )
+                            bound-body
                             bindings
                         )
-                        bound-body
+;                        (map
+;                            (lambda (b) (subst bound-body (first b) (num (interp-waee (second b)))))
+;                            bindings
+;                        )
+;                        bound-body
                     )
                 )
             )
@@ -132,7 +143,9 @@
 ; returns (with 'x (num 5) (add (id 'x) (id 'x)))
 (parse-waee '{with {{x 5}} {+ x x}})
 
-(eval-waee '{with {{x 5}} {+ x x}})
+(interp-waee (with (list (list 'x (num 5))) (binop '+ (id 'x) (id 'x))))
+
+;(eval-waee '{with {{x 5}} {+ x x}})
 
 ; returns -35
 ;(parse-waee '{+ {- {- 4 3} 15} {+ {+ {- 10 5} {- 3 2}} {- 15 42}}})
